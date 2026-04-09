@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  send-refs:
+  run-bot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +17,14 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install httpx
+
+      - name: Restore seen_ids
+        uses: actions/cache@v4
+        with:
+          path: seen_278506234.json
+          key: seen-278506234-${{ github.run_id }}
+          restore-keys: seen-278506234-
 
       - name: Run bot
         env:
@@ -27,3 +34,10 @@ jobs:
           DAILY_MIN: 20
           DAILY_MAX: 40
         run: python arena_refs_bot.py
+
+      - name: Save seen_ids
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: seen_278506234.json
+          key: seen-278506234-${{ github.run_id }}
