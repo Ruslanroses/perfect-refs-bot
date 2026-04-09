@@ -1,0 +1,29 @@
+name: Daily Perfect Refs
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 12:00 Tbilisi (UTC+3)
+  workflow_dispatch:
+
+jobs:
+  send-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run bot
+        env:
+          ARENA_TOKEN: ${{ secrets.ARENA_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          SUBSCRIBERS: ${{ secrets.SUBSCRIBERS }}
+          DAILY_MIN: 20
+          DAILY_MAX: 40
+        run: python arena_refs_bot.py
